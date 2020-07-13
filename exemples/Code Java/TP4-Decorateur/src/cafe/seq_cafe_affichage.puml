@@ -1,0 +1,20 @@
+@startuml
+participant "main" as m
+participant "BoissonChantilly" as b
+participant "Expresso" as b1
+
+
+activate m
+
+m-->b : cout()
+activate b
+
+b --> b1 : cout()
+activate b1
+b1 -> b : 1.95
+deactivate b1
+b -> m : 1.95+0.5
+deactivate b
+deactivate m
+
+@enduml

@@ -1,0 +1,24 @@
+@startuml
+
+title Deplacement du personnage
+
+participant main
+participant "jeu:Jeu" as jeu
+participant "perso:zeldiablo.Personnage" as perso
+
+activate main
+main -> jeu : deplacerPersonnage(direction)
+
+activate jeu
+jeu -> perso : seDeplacer(direction)
+activate perso
+
+jeu <-- perso
+deactivate perso
+
+main <-- jeu
+
+deactivate jeu
+deactivate main
+
+@enduml

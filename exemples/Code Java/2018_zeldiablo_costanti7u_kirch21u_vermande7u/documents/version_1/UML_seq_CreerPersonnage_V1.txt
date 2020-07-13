@@ -1,0 +1,25 @@
+@startuml
+title Creer zeldiablo.Personnage
+
+participant main
+participant "jeu:Jeu" as jeu
+participant "p:zeldiablo.Personnage" as p
+participant "laby:zeldiablo.Labyrinthe" as laby
+
+activate main
+create jeu
+main -> jeu : new
+
+activate jeu
+create laby
+jeu -> laby : new
+
+note right :cf: Creation zeldiablo.Labyrinthe
+
+
+create p
+jeu -> p : new(int x, int y)
+deactivate jeu
+deactivate main
+
+@enduml

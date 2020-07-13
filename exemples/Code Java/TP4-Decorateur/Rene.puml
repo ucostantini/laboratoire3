@@ -1,0 +1,31 @@
+@startuml
+
+abstract class Personnage {
+    + {abstract} combienCaCoute()
+    + {abstract} getLogo()
+}
+abstract class DecorateurAccessoire {
+# prix : int
+}
+
+class Rene
+class CrazyFrog
+
+class Chapeau
+class Lunettes
+class Smiley
+class Friandise
+
+Personnage <|-- Rene
+Personnage <|-- CrazyFrog
+
+DecorateurAccessoire <|-- Chapeau
+DecorateurAccessoire <|-- Smiley
+DecorateurAccessoire <|-- Lunettes
+DecorateurAccessoire <|-- Friandise
+
+Personnage "1" --o  DecorateurAccessoire
+Personnage <|-- DecorateurAccessoire
+
+
+@enduml

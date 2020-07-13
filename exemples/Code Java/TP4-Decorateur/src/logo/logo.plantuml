@@ -1,0 +1,65 @@
+@startuml
+
+title LOGO
+
+class Chapeau {
+  + Chapeau()
+  + getLogo()
+  + combienCaCoute()
+}
+
+class CrazyFrog {
+  - nomIm : String
+  - prix : double
+  + CrazyFrog()
+  + getLogo()
+  + combienCaCoute()
+}
+
+abstract class DecorateurAccessoire {
+  {abstract} + combienCaCoute()
+  {abstract} + getLogo()
+}
+
+class Friandise {
+  + Friandise()
+  + getLogo()
+  + combienCaCoute()
+}
+
+class Lunettes {
+  + Lunettes()
+  + getLogo()
+  + combienCaCoute()
+}
+
+abstract class Personnage {
+  {abstract} + getLogo()
+  {abstract} + combienCaCoute()
+}
+
+class ReneLaTaupe {
+  - nomIm : String
+  - prix : double
+  + ReneLaTaupe()
+  + getLogo()
+  + combienCaCoute()
+}
+
+class Smiley {
+  + Smiley()
+  + getLogo()
+  + combienCaCoute()
+}
+
+  Chapeau -up-|> DecorateurAccessoire
+  CrazyFrog -up-|> Personnage
+  DecorateurAccessoire -up-|> Personnage
+  DecorateurAccessoire o-- Personnage : p
+  Friandise -up-|> DecorateurAccessoire
+  Lunettes -up-|> DecorateurAccessoire
+  ReneLaTaupe -up-|> Personnage
+  Smiley -up-|> DecorateurAccessoire
+
+
+@enduml

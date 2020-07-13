@@ -1,0 +1,20 @@
+* Fonctionnalites version 2
+
+
+- Affichage
+    Les murs sont representes par des cases noires
+    Le personnage est represente par un rond rouge
+    L entree est un "trou" dans un mur
+
+- Utilisation du moteur
+    Adaptation des classes pour implementer le framework
+    et utiliser les methodes adaptees
+
+- Deplacer personnage
+    Le personnage se deplace selon ZQSD
+    Il ne sort pas du labyrinthe
+    il ne peut traverser un mur
+
+	
+
+
