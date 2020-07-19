@@ -1,0 +1,138 @@
+@startuml
+
+skinparam linetype ortho
+title __Diagramme de Classes UML__\n
+
+
+
+
+
+  namespace modeles {
+    class modeles.ModeleImage {
+      +ModeleImage(i: java.awt.Image)
+      +getImage(): java.awt.Image
+    }
+  }
+
+  namespace modeles {
+      class modeles.ModelePerspective {
+          - zoom: int
+          +setZoom(zoom: int)
+          +setPosition(p: Point)
+          +getZoom(): int
+          +getPoint(): Point
+
+      }
+    }
+
+namespace modeles {
+    interface modeles.Subject {
+      + addObserver(o: Observer)
+      + notifyObservers()
+    }
+}
+
+
+
+namespace java.awt {
+  class java.awt.Image {}
+  class java.awt.Point{}
+  class MouseEvent {}
+}
+
+modeles.ModeleImage ..|> modeles.Subject
+modeles.ModelePerspective ..|> modeles.Subject
+modeles.ModeleImage o-> java.awt.Image
+modeles.ModelePerspective o-> java.awt.Point : translation
+
+
+
+namespace vues {
+  class vues.Vignette {
+        + update(s: Subject)
+        + paintComponent(g : Graphics)
+  }
+}
+
+namespace vues {
+  class vues.Vue {
+        + update(s: Subject)
+        + paintComponent(g : Graphics)
+  }
+}
+
+
+namespace vues {
+    interface Observer {
+      + update(s: Subject)
+    }
+}
+
+namespace javax.swing {
+  class JPanel {}
+}
+
+
+
+vues.Vue o-> modeles.ModeleImage
+vues.Vue o-> modeles.ModelePerspective
+vues.Vignette o-> modeles.ModeleImage
+vues.Vue ..|> vues.Observer
+vues.Vignette ..|> vues.Observer
+vues.Vue --|> javax.swing.JPanel
+vues.Vignette --|> javax.swing.JPanel
+
+
+
+namespace controleurs {
+  class Controleur {
+    + Controleur()
+    + mousePressed()
+    + mouseDragged()
+    + mouseReleased()
+    + mouseWheelMoved()
+    + chargerApplication(chemin : String)
+    + sauverApplication()
+  }
+
+  abstract Commande {
+    {abstract} + execute(p: Perspective)
+        + saveToMemento() : Memento
+        + restoreFromMemento(m: Memento)
+   }
+
+   class  Memento {
+    +Memento(p: Perspective)
+    +getPerspective(): Perspective
+   }
+
+   class ZoomCommande {
++ execute(p: Perspective)
+  }
+  class TranslationCommande {
+  + execute(p: Perspective)
+  }
+
+  class GestionnaireCommande {
+    {static} - instance: GestionnaireCommande
+    - GestionnaireCommande()
+    {static} + getInstance(): GestionnaireCommande
+    + ajouterCommande(c: Commande)
+    + enleverCommande()
+
+  }
+
+}
+
+controleurs.ZoomCommande ..|> controleurs.Commande
+controleurs.TranslationCommande ..|> controleurs.Commande
+controleurs.GestionnaireCommande "1..*" o->  controleurs.Commande : commandes
+controleurs.Commande o-> controleurs.Memento
+controleurs.Memento o-> modeles.Perspective
+controleurs.Controleur --|> java.awt.MouseEvent
+controleurs.Controleur o-> "1..*" modeles.Perspective
+controleurs.Controleur o-> modeles.Image
+controleurs.Controleur o-> "1..*" controleurs.Memento
+
+
+@enduml
