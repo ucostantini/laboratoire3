@@ -1,16 +1,14 @@
 @startuml
+left to right direction
 
 skinparam linetype ortho
 title __Diagramme de Classes UML__\n
 
 
-
-
-
   namespace modeles {
     class modeles.ModeleImage {
-      +ModeleImage(i: java.awt.Image)
-      +getImage(): java.awt.Image
+      +ModeleImage(i: Image)
+      +getImage(): Image
     }
   }
 
@@ -27,7 +25,7 @@ title __Diagramme de Classes UML__\n
 
 namespace modeles {
     interface modeles.Subject {
-      + addObserver(o: Observer)
+      + addObserver(o: Observateur)
       + notifyObservers()
     }
 }
@@ -42,8 +40,8 @@ namespace java.awt {
 
 modeles.ModeleImage ..|> modeles.Subject
 modeles.ModelePerspective ..|> modeles.Subject
-modeles.ModeleImage o-> java.awt.Image
-modeles.ModelePerspective o-> java.awt.Point : translation
+modeles.ModeleImage o--> "1" java.awt.Image
+modeles.ModelePerspective o-[norank]-> "1" java.awt.Point :  "translation"
 
 
 
@@ -63,7 +61,7 @@ namespace vues {
 
 
 namespace vues {
-    interface Observer {
+    interface Observateur {
       + update(s: Subject)
     }
 }
@@ -74,11 +72,11 @@ namespace javax.swing {
 
 
 
-vues.Vue o-> modeles.ModeleImage
-vues.Vue o-> modeles.ModelePerspective
-vues.Vignette o-> modeles.ModeleImage
-vues.Vue ..|> vues.Observer
-vues.Vignette ..|> vues.Observer
+vues.Vue o-[#green]> modeles.ModeleImage
+vues.Vue o-[#green]> modeles.ModelePerspective
+vues.Vignette o-[#blue]> modeles.ModeleImage
+vues.Vue ..|> vues.Observateur
+vues.Vignette ..|> vues.Observateur
 vues.Vue --|> javax.swing.JPanel
 vues.Vignette --|> javax.swing.JPanel
 
@@ -92,7 +90,7 @@ namespace controleurs {
     + mouseReleased()
     + mouseWheelMoved()
     + chargerApplication(chemin : String)
-    + sauverApplication()
+    + sauvegarderApplication()
   }
 
   abstract Commande {
@@ -119,6 +117,7 @@ namespace controleurs {
     {static} + getInstance(): GestionnaireCommande
     + ajouterCommande(c: Commande)
     + enleverCommande()
+    + execute(p: Perspective, c: Commande)
 
   }
 
@@ -127,12 +126,12 @@ namespace controleurs {
 controleurs.ZoomCommande ..|> controleurs.Commande
 controleurs.TranslationCommande ..|> controleurs.Commande
 controleurs.GestionnaireCommande "1..*" o->  controleurs.Commande : commandes
-controleurs.Commande o-> controleurs.Memento
-controleurs.Memento o-> modeles.Perspective
+controleurs.Commande o-> "1" controleurs.Memento
+controleurs.Memento o-> "1" modeles.ModelePerspective
 controleurs.Controleur --|> java.awt.MouseEvent
-controleurs.Controleur o-> "1..*" modeles.Perspective
-controleurs.Controleur o-> modeles.Image
-controleurs.Controleur o-> "1..*" controleurs.Memento
+controleurs.Controleur o-> "1..*" modeles.ModelePerspective
+controleurs.Controleur o-> "1" modeles.ModeleImage
+controleurs.Controleur o-[#blue]> "1..*" controleurs.Memento
 
 
 @enduml
