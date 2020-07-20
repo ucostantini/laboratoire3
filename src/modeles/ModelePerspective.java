@@ -25,6 +25,7 @@ public class ModelePerspective implements Subject {
     public void setZoom(int zoom)
     {
         this.zoom = zoom;
+        this.notifyObservers();
     }
 
     public Point getTranslation()
@@ -35,6 +36,7 @@ public class ModelePerspective implements Subject {
     public void setTranslation(Point translation)
     {
         this.translation = translation;
+        this.notifyObservers();
     }
 
     @Override
