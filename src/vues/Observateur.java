@@ -1,5 +1,5 @@
 package vues;
 
-public abstract class Observateur {
-    public abstract void update();
+public interface  Observateur {
+     void update();
 }
