@@ -125,13 +125,14 @@ namespace controleurs {
 
 controleurs.ZoomCommande ..|> controleurs.Commande
 controleurs.TranslationCommande ..|> controleurs.Commande
-controleurs.GestionnaireCommande "1..*" o->  controleurs.Commande : commandes
 controleurs.Commande o-> "1" controleurs.Memento
 controleurs.Memento o-> "1" modeles.ModelePerspective
 controleurs.Controleur --|> java.awt.MouseEvent
 controleurs.Controleur o-> "1..*" modeles.ModelePerspective
 controleurs.Controleur o-> "1" modeles.ModeleImage
-controleurs.Controleur o-[#blue]> "1..*" controleurs.Memento
+controleurs.GestionnaireCommande o-[#blue]> "1..*" controleurs.Memento
+controleurs.Controleur o-> "1..*" vues.Vue
+controleurs.Controleur --|> javax.swing.JPanel
 
 
 @enduml

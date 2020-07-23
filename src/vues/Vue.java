@@ -1,28 +1,23 @@
 package vues;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-
 import modeles.ModeleImage;
+import modeles.ModelePerspective;
 
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 public class Vue extends JPanel implements Observateur   {
 
 	private ModeleImage modeleImage;
+    private ModelePerspective modelePerspective;
 	
-    BufferedImage img;
+
     private boolean init = true;
     private int zoomLevel = 0;
     private int minZoomLevel = -20;
@@ -32,10 +27,15 @@ public class Vue extends JPanel implements Observateur   {
     private Point dragStartScreen;
     private Point dragEndScreen;
     private AffineTransform coordTransform = new AffineTransform();
-	
-	public Vue() throws IOException {
-		this.setLayout(null);
-        this.setBounds(40,100,900,600);
+
+    public Vue(ModeleImage image, ModelePerspective perspective) throws IOException
+    {
+        this.modeleImage = image;
+        this.modelePerspective = perspective;
+
+
+        //this.setLayout(null);
+        //this.setBounds(40,100,900,600);
      
         
         this.addMouseListener(new MouseAdapter() {
@@ -59,13 +59,13 @@ public class Vue extends JPanel implements Observateur   {
                 }
             }
         });
-        
+
         this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 	}
     
     @Override
     public void update() {
-
+        repaint();
     }
 
     private void zoom(MouseWheelEvent e) {
@@ -123,11 +123,6 @@ public class Vue extends JPanel implements Observateur   {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         return new Dimension(screenSize.width, screenSize.height);
     }
-    
-    public void setImage(ModeleImage modeleImage){
-        this.modeleImage = modeleImage;
-        this.img = (BufferedImage) this.modeleImage.getImage();
-    }
 
     
     @Override
@@ -135,8 +130,8 @@ public class Vue extends JPanel implements Observateur   {
 
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-        int x = (int) (this.size().getWidth() - (img.getWidth() * .2)) / 2;
-        int y = (int) (this.size().getHeight() - (img.getHeight() * .2)) / 2;
+        int x = (int) (this.size().getWidth() - (((BufferedImage) this.modeleImage.getImage()).getWidth() * .2)) / 2;
+        int y = (int) (this.size().getHeight() - (((BufferedImage) this.modeleImage.getImage()).getHeight() * .2)) / 2;
 
         AffineTransform at = new AffineTransform();
         at.translate(x, y);
@@ -149,7 +144,7 @@ public class Vue extends JPanel implements Observateur   {
             g2.setTransform(coordTransform);
         }
 
-        g2.drawImage(img, 0, 0, this);
+        g2.drawImage(this.modeleImage.getImage(), 0, 0, this);
 
         g2.dispose();
     }
