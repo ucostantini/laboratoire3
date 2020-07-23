@@ -36,9 +36,9 @@ public class FenetrePrincipale extends JFrame {
 
         JFrame fenetre = new JFrame();
 
-        fenetre.getContentPane().add(controleur, BorderLayout.PAGE_START);
-        fenetre.getContentPane().add(vue1, BorderLayout.LINE_START);
-        fenetre.getContentPane().add(vue2, BorderLayout.LINE_END);
+        fenetre.getContentPane().add(controleur, BorderLayout.NORTH);
+        fenetre.getContentPane().add(vue1, BorderLayout.WEST);
+        fenetre.getContentPane().add(vue2, BorderLayout.EAST);
         fenetre.getContentPane().add(vignette, BorderLayout.CENTER);
 
         this.pack();

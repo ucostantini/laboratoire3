@@ -19,8 +19,6 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
     private ModelePerspective perspective2;
     private ModeleImage image;
 
-    private JMenuBar barreMenu;
-
 
     public Controleur(Vue vue1, Vue vue2, ModeleImage image, ModelePerspective perspective1, ModelePerspective perspective2) throws Exception
     {
@@ -31,6 +29,14 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
         this.perspective1 = perspective1;
         this.perspective2 = perspective2;
         this.image = image;
+
+        this.vue1.addMouseListener(this);
+        this.vue1.addMouseMotionListener(this);
+        this.vue1.addMouseWheelListener(this);
+
+        this.vue2.addMouseListener(this);
+        this.vue2.addMouseMotionListener(this);
+        this.vue2.addMouseWheelListener(this);
 
         //Chargement de l image
         JFileChooser fileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
