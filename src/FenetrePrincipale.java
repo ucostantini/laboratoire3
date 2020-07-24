@@ -36,10 +36,13 @@ public class FenetrePrincipale extends JFrame {
 
         JFrame fenetre = new JFrame();
 
-        fenetre.getContentPane().add(controleur, BorderLayout.NORTH);
-        fenetre.getContentPane().add(vue1, BorderLayout.WEST);
-        fenetre.getContentPane().add(vue2, BorderLayout.EAST);
-        fenetre.getContentPane().add(vignette, BorderLayout.CENTER);
+        JSplitPane conteneur = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,vignette,vue2);
+        //JSplitPane conteneur2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,vue1,vignette);
+
+
+        fenetre.add(controleur, BorderLayout.NORTH);
+        fenetre.add(conteneur, BorderLayout.CENTER);
+        //fenetre.add(vignette, BorderLayout.SOUTH);
 
         this.pack();
 
