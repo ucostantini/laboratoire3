@@ -11,7 +11,7 @@ import java.awt.*;
 public class FenetrePrincipale extends JFrame {
 
     private static final String TITRE_FENETRE = "Laboratoire 3";
-    private static final Dimension DIMENSION = new Dimension(1200, 800);
+    private static final Dimension DIMENSION = new Dimension(700, 500);
 
 
     private FenetrePrincipale() throws Exception
@@ -27,35 +27,38 @@ public class FenetrePrincipale extends JFrame {
 
         image.addObserver(vue1);
         image.addObserver(vue2);
-        image.addObserver(vignette);
 
-        perspective1.addObserver(vue1);
-        perspective2.addObserver(vue2);
+
+        //perspective1.addObserver(vue1);
+        //perspective2.addObserver(vue2);
 
         Controleur controleur = new Controleur(vue1, vue2, image, perspective1, perspective2);
 
         JFrame fenetre = new JFrame();
-
-        JSplitPane conteneur = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,vignette,vue2);
-        //JSplitPane conteneur2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,vue1,vignette);
-
-
-        fenetre.add(controleur, BorderLayout.NORTH);
-        fenetre.add(conteneur, BorderLayout.CENTER);
-        //fenetre.add(vignette, BorderLayout.SOUTH);
-
-        this.pack();
-
         fenetre.setDefaultCloseOperation(EXIT_ON_CLOSE);
         fenetre.setTitle(TITRE_FENETRE);
         fenetre.setSize(DIMENSION);
         fenetre.setVisible(true);
         fenetre.setLocationRelativeTo(null);
         fenetre.setResizable(false);
+
+
+        JPanel panel = new JPanel(new GridLayout(1,3,10,20));
+        panel.add(vue1);
+        panel.add(vue2);
+        panel.add(vignette);
+
+        fenetre.add(controleur, BorderLayout.NORTH);
+        fenetre.add(panel,BorderLayout.CENTER);
+
+        this.pack();
+
+
     }
 
     public static void main(String[] args) throws Exception
     {
-        new FenetrePrincipale();
+        FenetrePrincipale f = new FenetrePrincipale();
+
     }
 }
