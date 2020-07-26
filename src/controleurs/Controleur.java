@@ -22,6 +22,7 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 
     public Controleur(Vue vue1, Vue vue2, ModeleImage image, ModelePerspective perspective1, ModelePerspective perspective2) throws Exception
     {
+        //super();
         this.setBorder(BorderFactory.createLineBorder(Color.black));
 
         this.vue1 = vue1;
@@ -55,22 +56,38 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 
         //Chargement de la barre de menu
         JMenuBar barreMenu = new JMenuBar();
-        JMenu menu = new JMenu("Fichier...");
+        JMenu menu = new JMenu("Menu...");
 
+        JMenuItem undo = new JMenuItem("Annuler l'action...");
+        JMenuItem redo = new JMenuItem("Rétablir...");
         JMenuItem enregistrer = new JMenuItem("Enregistrer sous...");
         JMenuItem ouvrir = new JMenuItem("Ouvrir...");
+        
 
         enregistrer.addActionListener(actionEvent -> enregistrer());
         ouvrir.addActionListener(actionEvent -> ouvrirFichier());
+        undo.addActionListener(actionEvent -> annulerAction());
+        redo.addActionListener(actionEvent -> retablir());
 
-        menu.add(enregistrer);
+
+        menu.add(undo);
+        menu.add(redo);
         menu.add(ouvrir);
+        menu.add(enregistrer);
+
+
 
         barreMenu.add(menu);
 
         this.add(barreMenu);
 
 
+    }
+
+    private void retablir() {
+    }
+
+    private void annulerAction() {
     }
 
     private void enregistrer()
