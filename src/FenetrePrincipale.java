@@ -29,8 +29,8 @@ public class FenetrePrincipale extends JFrame {
     image.addObserver(vue1);
     image.addObserver(vue2);
 
-    //perspective1.addObserver(vue1);
-    //perspective2.addObserver(vue2);
+    perspective1.addObserver(vue1);
+    perspective2.addObserver(vue2);
 
     Controleur controleur = new Controleur(vue1, vue2, image, perspective1, perspective2);
 

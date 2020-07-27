@@ -109,7 +109,7 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 
   @Override
   public void mousePressed(MouseEvent mouseEvent) {
-    ModelePerspective mp = this.bindings.get(mouseEvent.getSource());
+    ModelePerspective mp = this.bindings.get((Vue)mouseEvent.getSource());
     mp.setDragStartScreen(mouseEvent.getPoint());
     mp.setDragEndScreen(null);
   }

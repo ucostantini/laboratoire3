@@ -15,16 +15,11 @@ public class ModelePerspective implements Subject {
   private int zoom;
   private Point translation;
   private final List<Observateur> abonnes;
-  private Point p;
-  private int wheelRotation;
 
 
   //Zoom
   private boolean init = true;
   private int zoomLevel = 0;
-  private final int minZoomLevel = -20;
-  private final int maxZoomLevel = 10;
-  private final double zoomMultiplicationFactor = 1.2;
 
   //translate
   private Point dragStartScreen;
@@ -55,15 +50,6 @@ public class ModelePerspective implements Subject {
     this.notifyObservers();
   }
 
-  public void setPoint(Point p) {
-    this.p = p;
-  }
-
-  public void setWheelRotation(int wheelRotation) {
-
-    this.wheelRotation = wheelRotation;
-  }
-
   public void setDragEndScreen(Point p) {
     this.dragEndScreen = p;
   }
@@ -83,10 +69,10 @@ public class ModelePerspective implements Subject {
     try {
       int wheelRotation = e.getWheelRotation();
       Point p = e.getPoint();
-      this.setPoint(p);
-      this.setWheelRotation(wheelRotation);
 
+      double zoomMultiplicationFactor = 1.2;
       if (wheelRotation > 0) {
+        int maxZoomLevel = 10;
         if (zoomLevel < maxZoomLevel) {
           zoomLevel++;
           Point2D p1 = transformPoint(p);
@@ -96,6 +82,7 @@ public class ModelePerspective implements Subject {
           this.notifyObservers();
         }
       } else {
+        int minZoomLevel = -20;
         if (zoomLevel > minZoomLevel) {
           zoomLevel--;
           Point2D p1 = transformPoint(p);
