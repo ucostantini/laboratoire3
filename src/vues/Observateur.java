@@ -1,5 +1,6 @@
 package vues;
 
-public interface  Observateur {
-     void update();
+public interface Observateur {
+
+  void update();
 }
