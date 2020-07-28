@@ -1,11 +1,7 @@
 package controleurs;
 
-import java.awt.Color;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.HashMap;
 import java.util.Map;
 import javax.imageio.ImageIO;
@@ -21,23 +17,36 @@ import modeles.ModeleImage;
 import modeles.ModelePerspective;
 import vues.Vue;
 
-public class Controleur extends JPanel implements MouseListener, MouseMotionListener,
-    MouseWheelListener {
+public class Controleur extends JPanel implements MouseListener, MouseMotionListener, KeyListener,
+        MouseWheelListener {
 
   private final ModeleImage image;
 
   private final Map<Vue, ModelePerspective> bindings;
+  ModelePerspective perspective1;
+  ModelePerspective perspective2;
+  GestionnaireCommandes gcPers1 = GestionnaireCommandes.getInstance();
+  GestionnaireCommandes gcPers2 = GestionnaireCommandes.getInstance();
+
+
+  Point fin;
+  Point debut;
+
 
 
   public Controleur(Vue vue1, Vue vue2, ModeleImage image, ModelePerspective perspective1,
       ModelePerspective perspective2) throws Exception {
     this.setBorder(BorderFactory.createLineBorder(Color.black));
     this.image = image;
+    this.perspective1 = perspective1;
+    this.perspective2 = perspective2;
 
+    vue1.addKeyListener(this);
     vue1.addMouseListener(this);
     vue1.addMouseMotionListener(this);
     vue1.addMouseWheelListener(this);
 
+    vue2.addKeyListener(this);
     vue2.addMouseListener(this);
     vue2.addMouseMotionListener(this);
     vue2.addMouseWheelListener(this);
@@ -66,18 +75,20 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
     JMenuBar barreMenu = new JMenuBar();
     JMenu menu = new JMenu("Menu...");
 
-    JMenuItem undo = new JMenuItem("Annuler l'action...");
-    JMenuItem redo = new JMenuItem("Rétablir...");
+    JMenuItem undoPers1 = new JMenuItem("Annuler l'action perspective 1...");
+    JMenuItem undoPers2 = new JMenuItem("Annuler l'action perspective 2...");
     JMenuItem enregistrer = new JMenuItem("Enregistrer sous...");
     JMenuItem ouvrir = new JMenuItem("Ouvrir...");
 
     enregistrer.addActionListener(actionEvent -> enregistrer());
     ouvrir.addActionListener(actionEvent -> ouvrirFichier());
-    undo.addActionListener(actionEvent -> annulerAction());
-    redo.addActionListener(actionEvent -> retablir());
+    undoPers1.addActionListener(actionEvent -> retablirPers1());
+    undoPers2.addActionListener(actionEvent -> {
+      retablirPers2();
+    });
 
-    menu.add(undo);
-    menu.add(redo);
+    menu.add(undoPers1);
+    menu.add(undoPers2);
     menu.add(ouvrir);
     menu.add(enregistrer);
 
@@ -88,10 +99,20 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 
   }
 
-  private void retablir() {
+  private void retablirPers1()  {
+    gcPers1.undoCommande(perspective1);
+  }
+
+  private void retablirPers2()  {
+    gcPers2.undoCommande(perspective2);
   }
 
   private void annulerAction() {
+
+    System.out.println(perspective1.zoomLevel);
+
+    System.out.println(perspective1.zoomAncien);
+
   }
 
   private void enregistrer() {
@@ -104,24 +125,29 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 
   @Override
   public void mouseClicked(MouseEvent mouseEvent) {
-
+    perspective1.zoomAncien = perspective1.zoomLevel;
   }
 
   @Override
   public void mousePressed(MouseEvent mouseEvent) {
+    this.debut = mouseEvent.getPoint();
     ModelePerspective mp = this.bindings.get((Vue)mouseEvent.getSource());
+    if (!mp.listPosition.contains(fin)) {
+      mp.listPosition.add(debut);
+    }
     mp.setDragStartScreen(mouseEvent.getPoint());
     mp.setDragEndScreen(null);
   }
 
   @Override
   public void mouseReleased(MouseEvent mouseEvent) {
-
+    this.fin = mouseEvent.getPoint();
+    ModelePerspective mp = this.bindings.get((Vue)mouseEvent.getSource());
+    mp.listPosition.add(fin);
   }
 
   @Override
   public void mouseEntered(MouseEvent mouseEvent) {
-
   }
 
   @Override
@@ -132,21 +158,45 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
   @Override
   public void mouseDragged(MouseEvent mouseEvent) {
     Vue source = (Vue) mouseEvent.getSource();
-    GestionnaireCommandes gc = GestionnaireCommandes.getInstance();
-    gc.executerCommande(new TranslateCommande(), this.bindings.get(source), mouseEvent);
+    if (this.bindings.get(source) == perspective1){
+      gcPers1.executerCommande(new TranslateCommande(), this.bindings.get(source), mouseEvent);
+    }else
+      gcPers2.executerCommande(new TranslateCommande(), this.bindings.get(source), mouseEvent);
   }
 
   @Override
   public void mouseMoved(MouseEvent mouseEvent) {
 
+
   }
 
   @Override
   public void mouseWheelMoved(MouseWheelEvent mouseWheelEvent) {
-    if (mouseWheelEvent.isControlDown()) {
+    //if (mouseWheelEvent.isControlDown()) {
       Vue source = (Vue) mouseWheelEvent.getSource();
-      GestionnaireCommandes gc = GestionnaireCommandes.getInstance();
-      gc.executerCommande(new ZoomCommande(), this.bindings.get(source), mouseWheelEvent);
-    }
+    if (this.bindings.get(source) == perspective1){
+      gcPers1.executerCommande(new ZoomCommande(), this.bindings.get(source), mouseWheelEvent);
+    }else
+      gcPers2.executerCommande(new ZoomCommande(), this.bindings.get(source), mouseWheelEvent);
+    //}
+  }
+
+
+  @Override
+  public void keyTyped(KeyEvent e) {
+    System.out.println("test");
+
+  }
+
+  @Override
+  public void keyPressed(KeyEvent e) {
+    System.out.println("test");
+
+  }
+
+  @Override
+  public void keyReleased(KeyEvent e) {
+    System.out.println("test");
+
   }
 }
