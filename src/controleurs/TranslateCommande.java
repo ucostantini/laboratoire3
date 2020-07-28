@@ -1,40 +1,26 @@
 package controleurs;
 
-import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Point2D;
-
+import java.util.LinkedList;
 import modeles.ModelePerspective;
 
-public class TranslateCommande implements Commande {
+public class GestionnaireCommandes{
 
-
-  @Override
-  public void execute(ModelePerspective mp, MouseEvent e) {
-    mp.translate(e);
+  public static GestionnaireCommandes getInstance() {
+    return new GestionnaireCommandes();
   }
 
+  public LinkedList<Commande> listCommande = new LinkedList<>();
 
-  @Override
-  public void undo(ModelePerspective mp) {
-    try {
-      int sizelist = mp.listPosition.size();
 
-      int index = sizelist - 1;
-      int index2 = sizelist - 2;
+  public void executerCommande(Commande c, ModelePerspective m, MouseEvent e) {
+    listCommande.add(c);
+    c.execute(m, e);
+  }
 
-      Point derElmList = mp.listPosition.get(index);
-      Point2D.Float dragStart = mp.transformPoint(mp.listPosition.get(index2));
-      Point2D.Float dragEnd = mp.transformPoint(derElmList);
-      mp.listPosition.remove(derElmList);
-      double dx = dragStart.getX() - dragEnd.getX();
-      double dy = dragStart.getY() - dragEnd.getY();
-      mp.coordTransform.translate(dx, dy);
-      mp.notifyObservers();
-    }catch (NoninvertibleTransformException ex) {
-      ex.printStackTrace();
-    }
+  public void undoCommande(ModelePerspective m) {
+    listCommande.getLast().undo(m);
+    listCommande.remove(listCommande.getLast());
   }
 
 
