@@ -7,48 +7,33 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import vues.Observateur;
 
 public class ModelePerspective implements Subject {
 
-  private int zoom;
-  private Point translation;
   private final List<Observateur> abonnes;
 
 
   //Zoom
   private boolean init = true;
-  private int zoomLevel = 0;
+  public int zoomLevel = 0;
+  public Point pointZoom;
+  public int zoomAncien;
+  public LinkedList<Point> listPosition = new LinkedList<>();
+
 
   //translate
-  private Point dragStartScreen;
-  private Point dragEndScreen;
-  private AffineTransform coordTransform = new AffineTransform();
+  public Point dragStartScreen;
+  public Point dragEndScreen;
+  public double dx,dy;
+  public AffineTransform coordTransform = new AffineTransform();
 
   public ModelePerspective() {
-    this.zoom = 0;
-    this.translation = new Point(0, 0);
     this.abonnes = new ArrayList<>();
   }
 
-  public int getZoom() {
-    return zoom;
-  }
-
-  public void setZoom(int zoom) {
-    this.zoom = zoom;
-    this.notifyObservers();
-  }
-
-  public Point getTranslation() {
-    return translation;
-  }
-
-  public void setTranslation(Point translation) {
-    this.translation = translation;
-    this.notifyObservers();
-  }
 
   public void setDragEndScreen(Point p) {
     this.dragEndScreen = p;
@@ -66,28 +51,32 @@ public class ModelePerspective implements Subject {
   }
 
   public void zoom(MouseWheelEvent e) {
+
     try {
       int wheelRotation = e.getWheelRotation();
-      Point p = e.getPoint();
+      pointZoom = e.getPoint();
 
       double zoomMultiplicationFactor = 1.2;
       if (wheelRotation > 0) {
-        int maxZoomLevel = 10;
-        if (zoomLevel < maxZoomLevel) {
-          zoomLevel++;
-          Point2D p1 = transformPoint(p);
+        int maxZoomLevel = -10;
+        if (zoomLevel > maxZoomLevel) {
+          zoomLevel--;
+          Point2D p1 = transformPoint(pointZoom);
           coordTransform.scale(1 / zoomMultiplicationFactor, 1 / zoomMultiplicationFactor);
-          Point2D p2 = transformPoint(p);
+          Point2D p2 = transformPoint(pointZoom);
           coordTransform.translate(p2.getX() - p1.getX(), p2.getY() - p1.getY());
+
           this.notifyObservers();
         }
       } else {
-        int minZoomLevel = -20;
-        if (zoomLevel > minZoomLevel) {
-          zoomLevel--;
-          Point2D p1 = transformPoint(p);
+
+        int minZoomLevel = 10;
+        if (zoomLevel < minZoomLevel) {
+          zoomLevel++;
+
+          Point2D p1 = transformPoint(pointZoom);
           coordTransform.scale(zoomMultiplicationFactor, zoomMultiplicationFactor);
-          Point2D p2 = transformPoint(p);
+          Point2D p2 = transformPoint(pointZoom);
           coordTransform.translate(p2.getX() - p1.getX(), p2.getY() - p1.getY());
           this.notifyObservers();
         }
@@ -97,13 +86,35 @@ public class ModelePerspective implements Subject {
     }
   }
 
+
+    public void setZoom(int zoom) {
+    int zoomDif = zoom - zoomLevel;
+    double zoomMultiplicationFactor = 1.2;
+    if(zoomDif>0){
+      for(int i = 0; i < zoomDif;i++){
+        coordTransform.scale(zoomMultiplicationFactor, zoomMultiplicationFactor);
+        this.notifyObservers();
+      }
+    }
+    else if(zoomDif<0){
+      for(int i = 0; i > zoomDif;i--){
+        coordTransform.scale(1/zoomMultiplicationFactor, 1/zoomMultiplicationFactor);
+        this.notifyObservers();
+      }
+    }
+      zoomLevel = zoom;
+  }
+
+
+
+
   public void translate(MouseEvent e) {
     try {
       this.setDragEndScreen(e.getPoint());
       Point2D.Float dragStart = transformPoint(dragStartScreen);
       Point2D.Float dragEnd = transformPoint(dragEndScreen);
-      double dx = dragEnd.getX() - dragStart.getX();
-      double dy = dragEnd.getY() - dragStart.getY();
+      this.dx = dragEnd.getX() - dragStart.getX();
+      this.dy = dragEnd.getY() - dragStart.getY();
       coordTransform.translate(dx, dy);
       dragStartScreen = dragEndScreen;
       dragEndScreen = null;
@@ -114,7 +125,8 @@ public class ModelePerspective implements Subject {
     }
   }
 
-  private Point2D.Float transformPoint(Point p1) throws NoninvertibleTransformException {
+
+  public Point2D.Float transformPoint(Point p1) throws NoninvertibleTransformException {
     AffineTransform inverse = coordTransform.createInverse();
     Point2D.Float p2 = new Point2D.Float();
     inverse.transform(p1, p2);
