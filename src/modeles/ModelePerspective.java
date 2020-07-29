@@ -6,9 +6,10 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
+import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 import vues.Observateur;
 
 public class ModelePerspective implements Subject {
@@ -18,20 +19,23 @@ public class ModelePerspective implements Subject {
 
   //Zoom
   private boolean init = true;
-  public int zoomLevel = 0;
+  public int zoomLevel;
   public Point pointZoom;
-  public int zoomAncien;
-  public LinkedList<Point> listPosition = new LinkedList<>();
+  public Stack<Integer> sauvegardeNiveauxZoom = new Stack<>();
+  public Stack<Point> sauvegardePositionsZoom = new Stack<>();
 
 
   //translate
   public Point dragStartScreen;
   public Point dragEndScreen;
-  public double dx,dy;
+  public double dx, dy;
   public AffineTransform coordTransform = new AffineTransform();
+
+  public Stack<AbstractMap.SimpleEntry<Point, Point>> sauvegardePositions = new Stack<>();
 
   public ModelePerspective() {
     this.abonnes = new ArrayList<>();
+    this.zoomLevel = 0;
   }
 
 
@@ -50,59 +54,60 @@ public class ModelePerspective implements Subject {
       }
   }
 
-  public void zoom(MouseWheelEvent e) {
+  public void zoom(MouseWheelEvent e) throws NoninvertibleTransformException {
 
-    try {
-      int wheelRotation = e.getWheelRotation();
-      pointZoom = e.getPoint();
+    int wheelRotation = e.getWheelRotation();
+    pointZoom = e.getPoint();
 
-      double zoomMultiplicationFactor = 1.2;
-      if (wheelRotation > 0) {
-        int maxZoomLevel = -10;
-        if (zoomLevel > maxZoomLevel) {
-          zoomLevel--;
-          Point2D p1 = transformPoint(pointZoom);
-          coordTransform.scale(1 / zoomMultiplicationFactor, 1 / zoomMultiplicationFactor);
-          Point2D p2 = transformPoint(pointZoom);
-          coordTransform.translate(p2.getX() - p1.getX(), p2.getY() - p1.getY());
+    double zoomMultiplicationFactor = 1.2;
+    if (wheelRotation > 0) {
+      //zoom out
+      zoomLevel--;
+      Point2D p1 = transformPoint(pointZoom);
+      coordTransform.scale(1 / zoomMultiplicationFactor, 1 / zoomMultiplicationFactor);
+      Point2D p2 = transformPoint(pointZoom);
+      coordTransform.translate(p2.getX() - p1.getX(), p2.getY() - p1.getY());
 
-          this.notifyObservers();
-        }
-      } else {
+    } else {
+      //zoom in
+      zoomLevel++;
 
-        int minZoomLevel = 10;
-        if (zoomLevel < minZoomLevel) {
-          zoomLevel++;
+      Point2D p1 = transformPoint(pointZoom);
+      coordTransform.scale(zoomMultiplicationFactor, zoomMultiplicationFactor);
+      Point2D p2 = transformPoint(pointZoom);
+      coordTransform.translate(p2.getX() - p1.getX(), p2.getY() - p1.getY());
 
-          Point2D p1 = transformPoint(pointZoom);
-          coordTransform.scale(zoomMultiplicationFactor, zoomMultiplicationFactor);
-          Point2D p2 = transformPoint(pointZoom);
-          coordTransform.translate(p2.getX() - p1.getX(), p2.getY() - p1.getY());
-          this.notifyObservers();
-        }
-      }
-    } catch (NoninvertibleTransformException ex) {
-      ex.printStackTrace();
+
     }
+    this.notifyObservers();
+
   }
 
 
-    public void setZoom(int zoom) {
-    int zoomDif = zoom - zoomLevel;
+  public void setZoom() throws NoninvertibleTransformException {
+    int zoomAncien = sauvegardeNiveauxZoom.pop();
+    int zoomDif = zoomAncien - zoomLevel;
     double zoomMultiplicationFactor = 1.2;
-    if(zoomDif>0){
-      for(int i = 0; i < zoomDif;i++){
+    Point pointZoom = sauvegardePositionsZoom.pop();
+
+    if (zoomDif > 0) {
+      for (int i = 0; i < zoomDif; i++) {
+        Point2D p1 = transformPoint(pointZoom);
         coordTransform.scale(zoomMultiplicationFactor, zoomMultiplicationFactor);
-        this.notifyObservers();
+        Point2D p2 = transformPoint(pointZoom);
+        coordTransform.translate(p2.getX() - p1.getX(), p2.getY() - p1.getY());
       }
-    }
-    else if(zoomDif<0){
-      for(int i = 0; i > zoomDif;i--){
-        coordTransform.scale(1/zoomMultiplicationFactor, 1/zoomMultiplicationFactor);
-        this.notifyObservers();
+      this.notifyObservers();
+    } else if (zoomDif < 0) {
+      for (int i = 0; i > zoomDif; i--) {
+        Point2D p1 = transformPoint(pointZoom);
+        coordTransform.scale(1 / zoomMultiplicationFactor, 1 / zoomMultiplicationFactor);
+        Point2D p2 = transformPoint(pointZoom);
+        coordTransform.translate(p2.getX() - p1.getX(), p2.getY() - p1.getY());
       }
+      this.notifyObservers();
     }
-      zoomLevel = zoom;
+    zoomLevel = zoomAncien;
   }
 
 
