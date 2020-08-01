@@ -12,7 +12,7 @@ import vues.Vue;
 public class FenetrePrincipale extends JFrame {
 
 	private static final String TITRE_FENETRE = "Laboratoire 3";
-	private static final Dimension DIMENSION = new Dimension(700, 500);
+	private static final Dimension DIMENSION = new Dimension(1200, 800);
 
 	private FenetrePrincipale() throws Exception {
 
