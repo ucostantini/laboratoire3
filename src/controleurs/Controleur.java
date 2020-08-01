@@ -37,8 +37,6 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
   private final ModeleImage image;
 
   private final Map<Vue, ModelePerspective> bindings;
-  GestionnaireCommandes gc1 = GestionnaireCommandes.getInstance();
-  GestionnaireCommandes gc2 = GestionnaireCommandes.getInstance();
 
   Point fin;
   Point debut;
@@ -113,12 +111,9 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
   }
 
   private void retablir(ModelePerspective mp) {
-    //GestionnaireCommandes gc = GestionnaireCommandes.getInstance();
-    if (mp == perspective1) {
-      gc1.undoCommande(mp);
-    } else {
-      gc2.undoCommande(mp);
-    }
+    GestionnaireCommandes gc = GestionnaireCommandes.getInstance();
+    gc.undoCommande(mp);
+
   }
 
   private void enregistrer() {
@@ -195,12 +190,8 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
     ModelePerspective mp = this.bindings.get(mouseEvent.getSource());
     mp.sauvegardeNiveauxZoom.push(mp.zoomLevel);
     mp.sauvegardePositionsZoom.push(mouseEvent.getPoint());
-
-    if (mp == perspective1) {
-      gc1.ajouterCommande(new ZoomCommande(), mp);
-    } else {
-      gc2.ajouterCommande(new ZoomCommande(), mp);
-    }
+    GestionnaireCommandes gc = GestionnaireCommandes.getInstance();
+    gc.ajouterCommande(new ZoomCommande(), mp);
     isZoom = true;
   }
 
@@ -218,12 +209,8 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
       this.fin = mouseEvent.getPoint();
       ModelePerspective mp = this.bindings.get(mouseEvent.getSource());
       mp.sauvegardePositions.push(new SimpleEntry<>(debut, fin));
-
-      if (mp == perspective1) {
-        gc1.ajouterCommande(new TranslateCommande(), mp);
-      } else {
-        gc2.ajouterCommande(new TranslateCommande(), mp);
-      }
+      GestionnaireCommandes gc = GestionnaireCommandes.getInstance();
+      gc.ajouterCommande(new TranslateCommande(), mp);
     }
     isZoom = false;
   }
@@ -242,11 +229,8 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 
     Vue source = (Vue) mouseEvent.getSource();
     ModelePerspective mp = this.bindings.get(source);
-    if (mp == perspective1) {
-      gc1.executerCommande(new TranslateCommande(), mp, mouseEvent);
-    } else {
-      gc2.executerCommande(new TranslateCommande(), mp, mouseEvent);
-    }
+    GestionnaireCommandes gc = GestionnaireCommandes.getInstance();
+    gc.executerCommande(new TranslateCommande(), mp, mouseEvent);
   }
   @Override
   public void mouseMoved(MouseEvent mouseEvent) {
@@ -260,11 +244,8 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
     Vue source = (Vue) mouseWheelEvent.getSource();
     //GestionnaireCommandes gc = GestionnaireCommandes.getInstance();
     ModelePerspective mp = this.bindings.get(source);
-    if (mp == perspective1) {
-      gc1.executerCommande(new ZoomCommande(), mp, mouseWheelEvent);
-    } else {
-      gc2.executerCommande(new ZoomCommande(), mp, mouseWheelEvent);
-    }
+    GestionnaireCommandes gc = GestionnaireCommandes.getInstance();
+    gc.executerCommande(new ZoomCommande(), mp, mouseWheelEvent);
     //}
   }
 
