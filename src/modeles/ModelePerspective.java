@@ -80,13 +80,12 @@ public class ModelePerspective implements Subject {
 
 
     }
-    sauvegardeNiveauxZoom.add(zoomLevel);
     this.notifyObservers();
 
   }
 
 
-  public void setZoom2() throws NoninvertibleTransformException {
+  public void setZoom() throws NoninvertibleTransformException {
     int zoomAncien = sauvegardeNiveauxZoom.pop();
     int zoomDif = zoomAncien - zoomLevel;
     double zoomMultiplicationFactor = 1.2;
@@ -112,7 +111,7 @@ public class ModelePerspective implements Subject {
     zoomLevel = zoomAncien;
   }
 
-  public void setZoom() throws NoninvertibleTransformException {
+  public void setZoom2() throws NoninvertibleTransformException {
     int zoomAncien = sauvegardeNiveauxZoom.pop();
     int zoomDif = zoomLevel - zoomAncien;
     double zoomMultiplicationFactor = 1.2;

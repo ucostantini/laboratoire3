@@ -22,7 +22,7 @@ public class ZoomCommande implements Commande {
   public void undo(ModelePerspective mp) {
     try {
       System.out.println(mp);
-      mp.setZoom2();
+      mp.setZoom();
     } catch (NoninvertibleTransformException e) {
       e.printStackTrace();
     }

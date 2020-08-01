@@ -154,24 +154,24 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 	  
 			  
 			 try {
-		         FileInputStream fileIn = new FileInputStream(src);
-		         ObjectInputStream in = new ObjectInputStream(fileIn);
-		         imgSave = (ImageSauvegarde) in.readObject();
-		         in.close();
-		         fileIn.close();
-			   	 
-		         this.perspective1.zoomLevel = imgSave.getZoom1();
-				 this.perspective1.setZoom();
-				 this.perspective1.setCoordTransform(imgSave.getTranslation1());
-				 this.perspective1.notifyObservers();
-				 
-			     this.perspective2.zoomLevel = imgSave.getZoom2();
-				 this.perspective2.setZoom();
-				 perspective2.setCoordTransform(imgSave.getTranslation2());
-				 this.perspective2.notifyObservers();
-		
-			         
-		      } catch (IOException i) {
+         FileInputStream fileIn = new FileInputStream(src);
+         ObjectInputStream in = new ObjectInputStream(fileIn);
+         imgSave = (ImageSauvegarde) in.readObject();
+         in.close();
+         fileIn.close();
+
+         this.perspective1.zoomLevel = imgSave.getZoom1();
+         this.perspective1.setZoom2();
+         this.perspective1.setCoordTransform(imgSave.getTranslation1());
+         this.perspective1.notifyObservers();
+
+         this.perspective2.zoomLevel = imgSave.getZoom2();
+         this.perspective2.setZoom2();
+         perspective2.setCoordTransform(imgSave.getTranslation2());
+         this.perspective2.notifyObservers();
+
+
+       } catch (IOException i) {
 		         i.printStackTrace();
 		         return;
 		      } catch (ClassNotFoundException c) {        
