@@ -7,6 +7,12 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.NoninvertibleTransformException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,9 +22,12 @@ import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
+
+import modeles.ImageSauvegarde;
 import modeles.ModeleImage;
 import modeles.ModelePerspective;
 import vues.Vue;
@@ -34,6 +43,9 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
   Point fin;
   Point debut;
 
+  
+  ModelePerspective perspective1;
+  ModelePerspective perspective2;
 
 
   public Controleur(Vue vue1, Vue vue2, ModeleImage image, ModelePerspective perspective1,
@@ -52,6 +64,9 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
     this.bindings = new HashMap<>();
     this.bindings.put(vue1, perspective1);
     this.bindings.put(vue2, perspective2);
+    
+    this.perspective1 = perspective1;
+    this.perspective2 = perspective2;
 
     //Chargement de l image
     JFileChooser fileChooser = new JFileChooser(
@@ -101,12 +116,72 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
   }
 
   private void enregistrer() {
-    //enregisrter les perspectives + image
-  }
+	    //enregisrter les perspectives + image
+		  JFileChooser dossier = new JFileChooser();
+	      int returnValue = dossier.showSaveDialog(null);
+	      if (returnValue == JFileChooser.APPROVE_OPTION) {
+			  String dest = "";
+			  dest += dossier.getSelectedFile().getAbsolutePath();
+			  System.out.println(dest);
+
+			  ImageSauvegarde imgSave = new ImageSauvegarde(perspective1.zoomLevel, perspective1.getCoordTransform(), perspective2.zoomLevel, perspective2.getCoordTransform());
+			  try {
+				  FileOutputStream fileOutImage = new FileOutputStream(dest+".ser");
+				  ObjectOutputStream out = new ObjectOutputStream(fileOutImage);
+			      out.writeObject(imgSave);
+			      out.close();
+			      fileOutImage.close();
+			      JOptionPane.showMessageDialog(null, "Fichier enregistre avec succes", "Message d'information", JOptionPane.INFORMATION_MESSAGE);
+			  } catch (IOException e) {
+			      e.printStackTrace();
+			
+			      JOptionPane.showMessageDialog(null, "Erreur lors de l'enregristrement du fichier\n"
+			              + e.getMessage(), "Message d'erreur", JOptionPane.ERROR_MESSAGE);
+			  }
+	      }	  	 	  
+	  }
 
   private void ouvrirFichier() {
-    //ouvrir le fichier sauvegarde
-  }
+	    //ouvrir le fichier sauvegarde
+		  JFileChooser fichier = new JFileChooser();
+	      fichier.setFileSelectionMode(JFileChooser.FILES_ONLY);
+	      int returnValue = fichier.showOpenDialog(null);
+	      if (returnValue == JFileChooser.APPROVE_OPTION) {
+		      String src = "";
+		      src += fichier.getSelectedFile().getAbsolutePath();
+		      ImageSauvegarde imgSave = null;
+	  
+			  
+			 try {
+		         FileInputStream fileIn = new FileInputStream(src);
+		         ObjectInputStream in = new ObjectInputStream(fileIn);
+		         imgSave = (ImageSauvegarde) in.readObject();
+		         in.close();
+		         fileIn.close();
+			   	 
+		         this.perspective1.zoomLevel = imgSave.getZoom1();
+				 this.perspective1.setZoom();
+				 this.perspective1.setCoordTransform(imgSave.getTranslation1());
+				 this.perspective1.notifyObservers();
+				 
+			     this.perspective2.zoomLevel = imgSave.getZoom2();
+				 this.perspective2.setZoom();
+				 perspective2.setCoordTransform(imgSave.getTranslation2());
+				 this.perspective2.notifyObservers();
+		
+			         
+		      } catch (IOException i) {
+		         i.printStackTrace();
+		         return;
+		      } catch (ClassNotFoundException c) {        
+		         c.printStackTrace();
+		         return;
+		      }	catch (NoninvertibleTransformException n) {        
+		         n.printStackTrace();
+		         return;
+		      }	
+	      }
+	  }
 
   @Override
   public void mouseClicked(MouseEvent mouseEvent) {
