@@ -17,7 +17,7 @@ public class TranslateCommande implements Commande {
 	@Override
 	public void undo(ModelePerspective mp) {
 		try {
-			AbstractMap.SimpleEntry<Point, Point> entry = mp.sauvegardePositions.pop();
+			AbstractMap.SimpleEntry<Point, Point> entry = mp.getSauvegardePositions().pop();
 
 			Point2D.Float dragStart = mp.transformPoint(entry.getKey());
 			Point2D.Float dragEnd = mp.transformPoint(entry.getValue());
