@@ -30,13 +30,19 @@ public class ModelePerspective implements Subject {
 	private Point ecranFinSouris;
 	private AffineTransform transformationCoordonnees = new AffineTransform();
 
-	public Stack<AbstractMap.SimpleEntry<Point, Point>> sauvegardePositions = new Stack<>();
+
+	private Stack<AbstractMap.SimpleEntry<Point, Point>> sauvegardePositions = new Stack<>();
 
 	public ModelePerspective() {
 		this.abonnes = new ArrayList<>();
 		this.niveauZoom = 0;
 		sauvegardeNiveauxZoom.add(0);
 	}
+
+	public Stack<AbstractMap.SimpleEntry<Point, Point>> getSauvegardePositions() {
+		return sauvegardePositions;
+	}
+	
 
 	public void setEcranFinSouris(Point p) {
 		this.ecranFinSouris = p;
@@ -102,7 +108,7 @@ public class ModelePerspective implements Subject {
 		transformationCoordonnees.translate(pointApres.getX() - pointAvant.getX(), pointApres.getY() - pointAvant.getY());
 	}
 
-	public void setZoomNoTranslate() throws NoninvertibleTransformException {
+	public void setZoomNoTranslate() {
 		int zoomAncien = sauvegardeNiveauxZoom.pop();
 		int zoomDif = niveauZoom - zoomAncien;
 
