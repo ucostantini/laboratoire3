@@ -25,7 +25,7 @@ public class TranslateCommande implements Commande {
 
 			double dx = dragStart.getX() - dragEnd.getX();
 			double dy = dragStart.getY() - dragEnd.getY();
-			mp.coordTransform.translate(dx, dy);
+			mp.getTransformationCoordonnees().translate(dx, dy);
 			mp.notifyObservers();
 		} catch (NoninvertibleTransformException ex) {
 			ex.printStackTrace();

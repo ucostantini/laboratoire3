@@ -37,11 +37,11 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 
 	private final Map<Vue, ModelePerspective> bindings;
 
-	Point fin;
-	Point debut;
+	private Point fin;
+	private Point debut;
 
-	ModelePerspective perspective1;
-	ModelePerspective perspective2;
+	private ModelePerspective perspective1;
+	private ModelePerspective perspective2;
 
 	boolean isZoom = false;
 
@@ -119,8 +119,8 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 			dest += dossier.getSelectedFile().getAbsolutePath();
 			System.out.println(dest);
 
-			ImageSauvegarde imgSave = new ImageSauvegarde(perspective1.niveauZoom, perspective1.getCoordTransform(),
-					perspective2.niveauZoom, perspective2.getCoordTransform());
+			ImageSauvegarde imgSave = new ImageSauvegarde(perspective1.getNiveauZoom(), perspective1.getTransformationCoordonnees(),
+					perspective2.getNiveauZoom(), perspective2.getTransformationCoordonnees());
 			try {
 				FileOutputStream fileOutImage = new FileOutputStream(dest + ".ser");
 				ObjectOutputStream out = new ObjectOutputStream(fileOutImage);
@@ -155,14 +155,14 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 				in.close();
 				fileIn.close();
 
-				this.perspective1.niveauZoom = imgSave.getZoom1();
+				this.perspective1.setNiveauZoom(imgSave.getZoom1());
 				this.perspective1.setZoomNoTranslate();
-				this.perspective1.setCoordTransform(imgSave.getTranslation1());
+				this.perspective1.setTransformationCoordonnees(imgSave.getTranslation1());
 				this.perspective1.notifyObservers();
 
-				this.perspective2.niveauZoom = imgSave.getZoom2();
+				this.perspective2.setNiveauZoom(imgSave.getZoom2());
 				this.perspective2.setZoomNoTranslate();
-				perspective2.setCoordTransform(imgSave.getTranslation2());
+				perspective2.setTransformationCoordonnees(imgSave.getTranslation2());
 				this.perspective2.notifyObservers();
 
 			} catch (IOException i) {
@@ -182,8 +182,8 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 	public void mouseClicked(MouseEvent mouseEvent) {
 
 		ModelePerspective mp = this.bindings.get(mouseEvent.getSource());
-		mp.sauvegardeNiveauxZoom.push(mp.niveauZoom);
-		mp.sauvegardePositionsZoom.push(mouseEvent.getPoint());
+		mp.getSauvegardeNiveauxZoom().push(mp.getNiveauZoom());
+		mp.getSauvegardePositionsZoom().push(mouseEvent.getPoint());
 		GestionnaireCommandes gc = GestionnaireCommandes.getInstance();
 		gc.ajouterCommande(new ZoomCommande(), mp);
 		isZoom = true;
@@ -210,17 +210,13 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 	}
 
 	@Override
-	public void mouseEntered(MouseEvent mouseEvent) {
-	}
+	public void mouseEntered(MouseEvent mouseEvent) {}
 
 	@Override
-	public void mouseExited(MouseEvent mouseEvent) {
-
-	}
+	public void mouseExited(MouseEvent mouseEvent) {}
 
 	@Override
 	public void mouseDragged(MouseEvent mouseEvent) {
-
 		Vue source = (Vue) mouseEvent.getSource();
 		ModelePerspective mp = this.bindings.get(source);
 		GestionnaireCommandes gc = GestionnaireCommandes.getInstance();
@@ -228,19 +224,14 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 	}
 
 	@Override
-	public void mouseMoved(MouseEvent mouseEvent) {
-
-	}
+	public void mouseMoved(MouseEvent mouseEvent) {}
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent mouseWheelEvent) {
-		// if (mouseWheelEvent.isControlDown()) {
 		Vue source = (Vue) mouseWheelEvent.getSource();
-		// GestionnaireCommandes gc = GestionnaireCommandes.getInstance();
 		ModelePerspective mp = this.bindings.get(source);
 		GestionnaireCommandes gc = GestionnaireCommandes.getInstance();
 		gc.executerCommande(new ZoomCommande(), mp, mouseWheelEvent);
-		// }
 	}
 
 }

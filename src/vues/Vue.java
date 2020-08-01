@@ -44,12 +44,15 @@ public class Vue extends JPanel implements Observateur {
 		int positionDebutY = (int) ((this.getHeight() - hauteurImage) / 2);
 		AffineTransform affineTransform = new AffineTransform();
 		affineTransform.translate(positionDebutX, positionDebutY);
-		if (this.perspective.isInit()) {
+
+		// Si l application est initialisee, alors on applique a l'image les cordoonnees "de base"
+		// Sinon on recupere les coordonnes transformees par une commande (zoom, translation...)
+		if (this.perspective.isInitialisationApplication()) {
 			g2d.setTransform(affineTransform);
-			this.perspective.setInit(false);
-			this.perspective.setCoordTransform(g2d.getTransform());
+			this.perspective.setInitialisationApplication(false);
+			this.perspective.setTransformationCoordonnees(g2d.getTransform());
 		} else {
-			g2d.setTransform(this.perspective.getCoordTransform());
+			g2d.setTransform(this.perspective.getTransformationCoordonnees());
 		}
 		g2d.drawImage(this.image.getImage(), 0, 0, this);
 		g2d.dispose();

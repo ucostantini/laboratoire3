@@ -16,18 +16,19 @@ public class ModelePerspective implements Subject {
 
 	private final List<Observateur> abonnes;
 
+	private boolean initialisationApplication = true;
+
 	// Zoom
-	private boolean init = true;
-	public int niveauZoom;
-	public Point pointZoom;
-	public Stack<Integer> sauvegardeNiveauxZoom = new Stack<>();
-	public Stack<Point> sauvegardePositionsZoom = new Stack<>();
-	public double puissanceZoom = 1.2;
+	private int niveauZoom;
+	private Point pointZoom;
+	private Stack<Integer> sauvegardeNiveauxZoom = new Stack<>();
+	private Stack<Point> sauvegardePositionsZoom = new Stack<>();
+	private final static double PUISSANCE_ZOOM = 1.2;
 
 	// translate
-	public Point ecranDebutSouris;
-	public Point ecranFinSouris;
-	public AffineTransform coordTransform = new AffineTransform();
+	private Point ecranDebutSouris;
+	private Point ecranFinSouris;
+	private AffineTransform transformationCoordonnees = new AffineTransform();
 
 	public Stack<AbstractMap.SimpleEntry<Point, Point>> sauvegardePositions = new Stack<>();
 
@@ -89,16 +90,16 @@ public class ModelePerspective implements Subject {
 
 	private void zoomIn(Point pointZoom) throws NoninvertibleTransformException {
 		Point2D pointAvant = transformPoint(pointZoom);
-		coordTransform.scale(puissanceZoom, puissanceZoom);
+		transformationCoordonnees.scale(PUISSANCE_ZOOM, PUISSANCE_ZOOM);
 		Point2D pointApres = transformPoint(pointZoom);
-		coordTransform.translate(pointApres.getX() - pointAvant.getX(), pointApres.getY() - pointAvant.getY());
+		transformationCoordonnees.translate(pointApres.getX() - pointAvant.getX(), pointApres.getY() - pointAvant.getY());
 	}
 
 	private void zoomOut(Point pointZoom) throws NoninvertibleTransformException {
 		Point2D pointAvant = transformPoint(pointZoom);
-		coordTransform.scale(1 / puissanceZoom, 1 / puissanceZoom);
+		transformationCoordonnees.scale(1 / PUISSANCE_ZOOM, 1 / PUISSANCE_ZOOM);
 		Point2D pointApres = transformPoint(pointZoom);
-		coordTransform.translate(pointApres.getX() - pointAvant.getX(), pointApres.getY() - pointAvant.getY());
+		transformationCoordonnees.translate(pointApres.getX() - pointAvant.getX(), pointApres.getY() - pointAvant.getY());
 	}
 
 	public void setZoomNoTranslate() throws NoninvertibleTransformException {
@@ -107,12 +108,12 @@ public class ModelePerspective implements Subject {
 
 		if (zoomDif > 0) {
 			for (int i = 0; i < zoomDif; i++) {
-				coordTransform.scale(puissanceZoom, puissanceZoom);
+				transformationCoordonnees.scale(PUISSANCE_ZOOM, PUISSANCE_ZOOM);
 			}
 			this.notifyObservers();
 		} else if (zoomDif < 0) {
 			for (int i = 0; i > zoomDif; i--) {
-				coordTransform.scale(1 / puissanceZoom, 1 / puissanceZoom);
+				transformationCoordonnees.scale(1 / PUISSANCE_ZOOM, 1 / PUISSANCE_ZOOM);
 			}
 		}
 		sauvegardeNiveauxZoom.add(niveauZoom);
@@ -124,7 +125,7 @@ public class ModelePerspective implements Subject {
 			this.setEcranFinSouris(e.getPoint());
 			Point2D.Float debutSouris = transformPoint(ecranDebutSouris);
 			Point2D.Float finSouris = transformPoint(ecranFinSouris);
-			coordTransform.translate(finSouris.getX() - debutSouris.getX(), finSouris.getY() - debutSouris.getY());
+			transformationCoordonnees.translate(finSouris.getX() - debutSouris.getX(), finSouris.getY() - debutSouris.getY());
 			ecranDebutSouris = ecranFinSouris;
 			this.notifyObservers();
 		} catch (NoninvertibleTransformException e1) {
@@ -133,7 +134,7 @@ public class ModelePerspective implements Subject {
 	}
 
 	public Point2D.Float transformPoint(Point p1) throws NoninvertibleTransformException {
-		AffineTransform inverse = coordTransform.createInverse();
+		AffineTransform inverse = transformationCoordonnees.createInverse();
 		Point2D.Float p2 = new Point2D.Float();
 		inverse.transform(p1, p2);
 		return p2;
@@ -144,19 +145,35 @@ public class ModelePerspective implements Subject {
 		this.abonnes.add(observer);
 	}
 
-	public boolean isInit() {
-		return init;
+	public boolean isInitialisationApplication() {
+		return initialisationApplication;
 	}
 
-	public void setInit(boolean init) {
-		this.init = init;
+	public void setInitialisationApplication(boolean initialisationApplication) {
+		this.initialisationApplication = initialisationApplication;
 	}
 
-	public AffineTransform getCoordTransform() {
-		return coordTransform;
+	public AffineTransform getTransformationCoordonnees() {
+		return transformationCoordonnees;
 	}
 
-	public void setCoordTransform(AffineTransform coordTransform) {
-		this.coordTransform = coordTransform;
+	public void setTransformationCoordonnees(AffineTransform transformationCoordonnees) {
+		this.transformationCoordonnees = transformationCoordonnees;
+	}
+
+	public int getNiveauZoom() {
+		return niveauZoom;
+	}
+
+	public void setNiveauZoom(int niveauZoom) {
+		this.niveauZoom = niveauZoom;
+	}
+
+	public Stack<Integer> getSauvegardeNiveauxZoom() {
+		return sauvegardeNiveauxZoom;
+	}
+
+	public Stack<Point> getSauvegardePositionsZoom() {
+		return sauvegardePositionsZoom;
 	}
 }
