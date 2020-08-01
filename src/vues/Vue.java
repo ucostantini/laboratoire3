@@ -18,7 +18,7 @@ public class Vue extends JPanel implements Observateur {
 	private final ModeleImage image;
 	private final ModelePerspective perspective;
 
-	public Vue(ModeleImage image, ModelePerspective perspective) throws IOException {
+	public Vue(ModeleImage image, ModelePerspective perspective) {
 		this.image = image;
 		this.perspective = perspective;
 		this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
