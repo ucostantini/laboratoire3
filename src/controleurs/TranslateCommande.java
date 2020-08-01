@@ -9,30 +9,27 @@ import modeles.ModelePerspective;
 
 public class TranslateCommande implements Commande {
 
+	@Override
+	public void execute(ModelePerspective mp, MouseEvent e) {
+		mp.translate(e);
+	}
 
-  @Override
-  public void execute(ModelePerspective mp, MouseEvent e) {
-    mp.translate(e);
-  }
+	@Override
+	public void undo(ModelePerspective mp) {
+		try {
+			System.out.println(mp);
+			AbstractMap.SimpleEntry<Point, Point> entry = mp.sauvegardePositions.pop();
 
+			Point2D.Float dragStart = mp.transformPoint(entry.getKey());
+			Point2D.Float dragEnd = mp.transformPoint(entry.getValue());
 
-  @Override
-  public void undo(ModelePerspective mp) {
-    try {
-      System.out.println(mp);
-      AbstractMap.SimpleEntry<Point, Point> entry = mp.sauvegardePositions.pop();
-
-      Point2D.Float dragStart = mp.transformPoint(entry.getKey());
-      Point2D.Float dragEnd = mp.transformPoint(entry.getValue());
-
-      double dx = dragStart.getX() - dragEnd.getX();
-      double dy = dragStart.getY() - dragEnd.getY();
-      mp.coordTransform.translate(dx, dy);
-      mp.notifyObservers();
-    } catch (NoninvertibleTransformException ex) {
-      ex.printStackTrace();
-    }
-  }
-
+			double dx = dragStart.getX() - dragEnd.getX();
+			double dy = dragStart.getY() - dragEnd.getY();
+			mp.coordTransform.translate(dx, dy);
+			mp.notifyObservers();
+		} catch (NoninvertibleTransformException ex) {
+			ex.printStackTrace();
+		}
+	}
 
 }
