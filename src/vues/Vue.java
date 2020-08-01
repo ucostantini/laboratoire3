@@ -15,53 +15,44 @@ import modeles.ModelePerspective;
 
 public class Vue extends JPanel implements Observateur {
 
-  private final ModeleImage image;
-  private final ModelePerspective perspective;
+	private final ModeleImage image;
+	private final ModelePerspective perspective;
 
-  public Vue(ModeleImage image, ModelePerspective perspective) throws IOException {
-    this.image = image;
-    this.perspective = perspective;
-    this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-  }
+	public Vue(ModeleImage image, ModelePerspective perspective) throws IOException {
+		this.image = image;
+		this.perspective = perspective;
+		this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+	}
 
-  @Override
-  public void update() {
-    repaint();
-  }
+	@Override
+	public void update() {
+		repaint();
+	}
 
-  public Dimension getPreferredSize() {
-    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    return new Dimension(screenSize.width, screenSize.height);
-  }
+	public Dimension getPreferredSize() {
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		return new Dimension(screenSize.width, screenSize.height);
+	}
 
-
-  @Override
-  protected void paintComponent(Graphics g) {
-
-    super.paintComponent(g);
-    Graphics2D g2 = (Graphics2D) g;
-    int x =
-        (int) (this.size().getWidth() - (((BufferedImage) this.image.getImage()).getWidth() * .2))
-            / 2;
-    int y =
-        (int) (this.size().getHeight() - (((BufferedImage) this.image.getImage()).getHeight() * .2))
-            / 2;
-
-    AffineTransform at = new AffineTransform();
-    at.translate(x, y);
-    at.scale(.2, .2);
-    if (this.perspective.isInit()) {
-      g2.setTransform(at);
-      this.perspective.setInit(false);
-      this.perspective.setCoordTransform(g2.getTransform());
-    } else {
-      g2.setTransform(this.perspective.getCoordTransform());
-    }
-
-    g2.drawImage(this.image.getImage(), 0, 0, this);
-
-    g2.dispose();
-  }
-
+	@Override
+	protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		Graphics2D g2d = (Graphics2D) g;
+		int largeurImage = ((BufferedImage) this.image.getImage()).getWidth();
+		int hauteurImage = ((BufferedImage) this.image.getImage()).getHeight();
+		int positionDebutX = (int) ((this.getWidth() - largeurImage) / 2);
+		int positionDebutY = (int) ((this.getHeight() - hauteurImage) / 2);
+		AffineTransform affineTransform = new AffineTransform();
+		affineTransform.translate(positionDebutX, positionDebutY);
+		if (this.perspective.isInit()) {
+			g2d.setTransform(affineTransform);
+			this.perspective.setInit(false);
+			this.perspective.setCoordTransform(g2d.getTransform());
+		} else {
+			g2d.setTransform(this.perspective.getCoordTransform());
+		}
+		g2d.drawImage(this.image.getImage(), 0, 0, this);
+		g2d.dispose();
+	}
 
 }
