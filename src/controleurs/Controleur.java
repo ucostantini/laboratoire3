@@ -165,15 +165,8 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 				perspective2.setTransformationCoordonnees(imgSave.getTranslation2());
 				this.perspective2.notifyObservers();
 
-			} catch (IOException i) {
+			} catch (IOException | ClassNotFoundException i) {
 				i.printStackTrace();
-				return;
-			} catch (ClassNotFoundException c) {
-				c.printStackTrace();
-				return;
-			} catch (NoninvertibleTransformException n) {
-				n.printStackTrace();
-				return;
 			}
 		}
 	}
@@ -202,7 +195,7 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 		if (!isZoom) {
 			this.fin = mouseEvent.getPoint();
 			ModelePerspective mp = this.bindings.get(mouseEvent.getSource());
-			mp.sauvegardePositions.push(new SimpleEntry<>(debut, fin));
+			mp.getSauvegardePositions().push(new SimpleEntry<>(debut, fin));
 			GestionnaireCommandes gc = GestionnaireCommandes.getInstance();
 			gc.ajouterCommande(new TranslateCommande(), mp);
 		}
