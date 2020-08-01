@@ -26,7 +26,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
-
 import modeles.ImageSauvegarde;
 import modeles.ModeleImage;
 import modeles.ModelePerspective;
@@ -38,14 +37,17 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
   private final ModeleImage image;
 
   private final Map<Vue, ModelePerspective> bindings;
-
+  GestionnaireCommandes gc1 = GestionnaireCommandes.getInstance();
+  GestionnaireCommandes gc2 = GestionnaireCommandes.getInstance();
 
   Point fin;
   Point debut;
 
-  
+
   ModelePerspective perspective1;
   ModelePerspective perspective2;
+
+  boolean isZoom = false;
 
 
   public Controleur(Vue vue1, Vue vue2, ModeleImage image, ModelePerspective perspective1,
@@ -88,15 +90,18 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
     JMenuBar barreMenu = new JMenuBar();
     JMenu menu = new JMenu("Menu...");
 
-    JMenuItem undo = new JMenuItem("Annuler l'action sur toutes les perspectives");
+    JMenuItem undo1 = new JMenuItem("Annuler perspective 1");
+    JMenuItem undo2 = new JMenuItem("Annuler perspective 2");
     JMenuItem enregistrer = new JMenuItem("Enregistrer sous...");
     JMenuItem ouvrir = new JMenuItem("Ouvrir...");
 
     enregistrer.addActionListener(actionEvent -> enregistrer());
     ouvrir.addActionListener(actionEvent -> ouvrirFichier());
-    undo.addActionListener(actionEvent -> retablir());
+    undo1.addActionListener(actionEvent -> retablir(perspective1));
+    undo2.addActionListener(actionEvent -> retablir(perspective2));
 
-    menu.add(undo);
+    menu.add(undo1);
+    menu.add(undo2);
     menu.add(ouvrir);
     menu.add(enregistrer);
 
@@ -107,22 +112,23 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 
   }
 
-  private void retablir() {
-    GestionnaireCommandes gc = GestionnaireCommandes.getInstance();
-    System.out.println(this.bindings.values());
-    for (ModelePerspective mp : this.bindings.values()) {
-      gc.undoCommande(mp);
+  private void retablir(ModelePerspective mp) {
+    //GestionnaireCommandes gc = GestionnaireCommandes.getInstance();
+    if (mp == perspective1) {
+      gc1.undoCommande(mp);
+    } else {
+      gc2.undoCommande(mp);
     }
   }
 
   private void enregistrer() {
-	    //enregisrter les perspectives + image
-		  JFileChooser dossier = new JFileChooser();
-	      int returnValue = dossier.showSaveDialog(null);
-	      if (returnValue == JFileChooser.APPROVE_OPTION) {
-			  String dest = "";
-			  dest += dossier.getSelectedFile().getAbsolutePath();
-			  System.out.println(dest);
+    //enregisrter les perspectives + image
+    JFileChooser dossier = new JFileChooser();
+    int returnValue = dossier.showSaveDialog(null);
+    if (returnValue == JFileChooser.APPROVE_OPTION) {
+      String dest = "";
+      dest += dossier.getSelectedFile().getAbsolutePath();
+      System.out.println(dest);
 
 			  ImageSauvegarde imgSave = new ImageSauvegarde(perspective1.zoomLevel, perspective1.getCoordTransform(), perspective2.zoomLevel, perspective2.getCoordTransform());
 			  try {
@@ -189,8 +195,13 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
     ModelePerspective mp = this.bindings.get(mouseEvent.getSource());
     mp.sauvegardeNiveauxZoom.push(mp.zoomLevel);
     mp.sauvegardePositionsZoom.push(mouseEvent.getPoint());
-    GestionnaireCommandes gc = GestionnaireCommandes.getInstance();
-    gc.ajouterCommande(new ZoomCommande(), mp);
+
+    if (mp == perspective1) {
+      gc1.ajouterCommande(new ZoomCommande(), mp);
+    } else {
+      gc2.ajouterCommande(new ZoomCommande(), mp);
+    }
+    isZoom = true;
   }
 
   @Override
@@ -203,11 +214,18 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 
   @Override
   public void mouseReleased(MouseEvent mouseEvent) {
-    this.fin = mouseEvent.getPoint();
-    ModelePerspective mp = this.bindings.get(mouseEvent.getSource());
-    mp.sauvegardePositions.push(new SimpleEntry<>(debut, fin));
-    GestionnaireCommandes gc = GestionnaireCommandes.getInstance();
-    gc.ajouterCommande(new TranslateCommande(), mp);
+    if (!isZoom) {
+      this.fin = mouseEvent.getPoint();
+      ModelePerspective mp = this.bindings.get(mouseEvent.getSource());
+      mp.sauvegardePositions.push(new SimpleEntry<>(debut, fin));
+
+      if (mp == perspective1) {
+        gc1.ajouterCommande(new TranslateCommande(), mp);
+      } else {
+        gc2.ajouterCommande(new TranslateCommande(), mp);
+      }
+    }
+    isZoom = false;
   }
 
   @Override
@@ -221,9 +239,14 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 
   @Override
   public void mouseDragged(MouseEvent mouseEvent) {
-    GestionnaireCommandes gc = GestionnaireCommandes.getInstance();
+
     Vue source = (Vue) mouseEvent.getSource();
-    gc.executerCommande(new TranslateCommande(), this.bindings.get(source), mouseEvent);
+    ModelePerspective mp = this.bindings.get(source);
+    if (mp == perspective1) {
+      gc1.executerCommande(new TranslateCommande(), mp, mouseEvent);
+    } else {
+      gc2.executerCommande(new TranslateCommande(), mp, mouseEvent);
+    }
   }
   @Override
   public void mouseMoved(MouseEvent mouseEvent) {
@@ -235,8 +258,13 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
   public void mouseWheelMoved(MouseWheelEvent mouseWheelEvent) {
     //if (mouseWheelEvent.isControlDown()) {
     Vue source = (Vue) mouseWheelEvent.getSource();
-    GestionnaireCommandes gc = GestionnaireCommandes.getInstance();
-    gc.executerCommande(new ZoomCommande(), this.bindings.get(source), mouseWheelEvent);
+    //GestionnaireCommandes gc = GestionnaireCommandes.getInstance();
+    ModelePerspective mp = this.bindings.get(source);
+    if (mp == perspective1) {
+      gc1.executerCommande(new ZoomCommande(), mp, mouseWheelEvent);
+    } else {
+      gc2.executerCommande(new ZoomCommande(), mp, mouseWheelEvent);
+    }
     //}
   }
 

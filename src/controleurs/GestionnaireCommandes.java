@@ -1,26 +1,20 @@
 package controleurs;
 
 import java.awt.event.MouseEvent;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Stack;
 import modeles.ModelePerspective;
 
 public class GestionnaireCommandes {
 
-  private static GestionnaireCommandes gc;
-  public Map<ModelePerspective, Stack<Commande>> commandes = new HashMap<>();
 
+  public Stack<Commande> commandes = new Stack<>();
 
   private GestionnaireCommandes() {
 
   }
 
   public static GestionnaireCommandes getInstance() {
-    if (GestionnaireCommandes.gc == null) {
-      GestionnaireCommandes.gc = new GestionnaireCommandes();
-    }
-    return GestionnaireCommandes.gc;
+    return new GestionnaireCommandes();
   }
 
 
@@ -30,18 +24,14 @@ public class GestionnaireCommandes {
 
   public void undoCommande(ModelePerspective m) {
     if (!commandes.isEmpty()) {
-      Stack<Commande> commande = commandes.get(m);
-      if (commande != null && !commande.empty()) {
-        commande.pop().undo(m);
+      if (commandes != null && !commandes.empty()) {
+        commandes.pop().undo(m);
       }
     }
   }
 
   public void ajouterCommande(Commande c, ModelePerspective m) {
-    if (!commandes.containsKey(m)) {
-      commandes.put(m, new Stack<>());
-    }
-    commandes.get(m).push(c);
+    commandes.push(c);
   }
 
 

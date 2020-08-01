@@ -35,22 +35,23 @@ public class FenetrePrincipale extends JFrame {
     Controleur controleur = new Controleur(vue1, vue2, image, perspective1, perspective2);
 
     JFrame fenetre = new JFrame();
-    fenetre.setDefaultCloseOperation(EXIT_ON_CLOSE);
-    fenetre.setTitle(TITRE_FENETRE);
-    fenetre.setSize(DIMENSION);
-    fenetre.setVisible(true);
-    fenetre.setLocationRelativeTo(null);
-    fenetre.setResizable(false);
 
     JPanel panel = new JPanel(new GridLayout(1, 3, 10, 20));
     panel.add(vue1);
     panel.add(vue2);
     panel.add(vignette);
 
-    fenetre.add(controleur, BorderLayout.NORTH);
-    fenetre.add(panel, BorderLayout.CENTER);
+    this.add(controleur, BorderLayout.NORTH);
+    this.add(panel, BorderLayout.CENTER);
 
     this.pack();
+
+    this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+    this.setTitle(TITRE_FENETRE);
+    this.setSize(DIMENSION);
+    this.setVisible(true);
+    this.setLocationRelativeTo(null);
+    this.setResizable(false);
 
 
   }

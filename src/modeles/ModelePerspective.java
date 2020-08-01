@@ -36,7 +36,6 @@ public class ModelePerspective implements Subject {
   public ModelePerspective() {
     this.abonnes = new ArrayList<>();
     this.zoomLevel = 0;
-    sauvegardeNiveauxZoom.add(0);
   }
 
 
@@ -50,9 +49,9 @@ public class ModelePerspective implements Subject {
 
   @Override
   public void notifyObservers() {
-      for (Observateur abonne : this.abonnes) {
-          abonne.update();
-      }
+    for (Observateur abonne : this.abonnes) {
+      abonne.update();
+    }
   }
 
   public void zoom(MouseWheelEvent e) throws NoninvertibleTransformException {
@@ -80,7 +79,6 @@ public class ModelePerspective implements Subject {
 
 
     }
-    sauvegardeNiveauxZoom.add(zoomLevel);   
     this.notifyObservers();
 
   }
@@ -88,29 +86,28 @@ public class ModelePerspective implements Subject {
 
   public void setZoom() throws NoninvertibleTransformException {
     int zoomAncien = sauvegardeNiveauxZoom.pop();
-    int zoomDif = zoomLevel - zoomAncien;
+    int zoomDif = zoomAncien - zoomLevel;
     double zoomMultiplicationFactor = 1.2;
-    //Point pointZoom = sauvegardePositionsZoom.pop();
+    Point pointZoom = sauvegardePositionsZoom.pop();
 
     if (zoomDif > 0) {
       for (int i = 0; i < zoomDif; i++) {
-        //Point2D p1 = transformPoint(pointZoom);
-    	coordTransform.scale(zoomMultiplicationFactor, zoomMultiplicationFactor);
-        //Point2D p2 = transformPoint(pointZoom);
-        //coordTransform.translate(p2.getX() - p1.getX(), p2.getY() - p1.getY());
+        Point2D p1 = transformPoint(pointZoom);
+        coordTransform.scale(zoomMultiplicationFactor, zoomMultiplicationFactor);
+        Point2D p2 = transformPoint(pointZoom);
+        coordTransform.translate(p2.getX() - p1.getX(), p2.getY() - p1.getY());
       }
       this.notifyObservers();
     } else if (zoomDif < 0) {
       for (int i = 0; i > zoomDif; i--) {
-        //Point2D p1 = transformPoint(pointZoom);    	
-    	coordTransform.scale(1 / zoomMultiplicationFactor, 1 / zoomMultiplicationFactor);
-        //Point2D p2 = transformPoint(pointZoom);
-        //coordTransform.translate(p2.getX() - p1.getX(), p2.getY() - p1.getY());
+        Point2D p1 = transformPoint(pointZoom);
+        coordTransform.scale(1 / zoomMultiplicationFactor, 1 / zoomMultiplicationFactor);
+        Point2D p2 = transformPoint(pointZoom);
+        coordTransform.translate(p2.getX() - p1.getX(), p2.getY() - p1.getY());
       }
       this.notifyObservers();
     }
-    sauvegardeNiveauxZoom.add(zoomLevel);
-    //zoomLevel = zoomAncien;
+    zoomLevel = zoomAncien;
   }
 
 
@@ -125,13 +122,13 @@ public class ModelePerspective implements Subject {
       this.dy = dragEnd.getY() - dragStart.getY();
       coordTransform.translate(dx, dy);
       dragStartScreen = dragEndScreen;
+      dragEndScreen = null;
       this.notifyObservers();
 
     } catch (NoninvertibleTransformException ex) {
       ex.printStackTrace();
     }
   }
-  
 
 
   public Point2D.Float transformPoint(Point p1) throws NoninvertibleTransformException {
