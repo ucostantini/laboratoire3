@@ -7,13 +7,24 @@ import java.awt.geom.Point2D;
 import java.util.AbstractMap;
 import modeles.ModelePerspective;
 
+/**
+ * Classe responsable de translate une perspective
+ */
 public class TranslateCommande implements Commande {
-
+	/**
+	 * Methode qui execute la translation
+	 * @param mp, la perspective
+	 * @param e, la commande de la souris
+	 */
 	@Override
 	public void execute(ModelePerspective mp, MouseEvent e) {
 		mp.translate(e);
 	}
 
+	/**
+	 * Methode qui permet d'anuler un translate
+	 * @param mp, la perspective
+	 */
 	@Override
 	public void undo(ModelePerspective mp) {
 		try {

@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Stack;
 import vues.Observateur;
 
+/**
+ * Cette classe sert a instancier les perspecrives
+ */
 public class ModelePerspective implements Subject {
 
 	private final List<Observateur> abonnes;
@@ -39,10 +42,14 @@ public class ModelePerspective implements Subject {
 		sauvegardeNiveauxZoom.add(0);
 	}
 
+  /**
+   * Sauvegarde des position
+   * @return les position
+   */
 	public Stack<AbstractMap.SimpleEntry<Point, Point>> getSauvegardePositions() {
 		return sauvegardePositions;
 	}
-	
+
 
 	public void setEcranFinSouris(Point p) {
 		this.ecranFinSouris = p;
@@ -51,14 +58,20 @@ public class ModelePerspective implements Subject {
 	public void setEcranDebutSouris(Point dragStartScreen) {
 		this.ecranDebutSouris = dragStartScreen;
 	}
-
+  /**
+   * Utiliser pour "avertir" d'un changement
+   */
 	@Override
 	public void notifyObservers() {
 		for (Observateur abonne : this.abonnes) {
 			abonne.update();
 		}
 	}
-
+  /**
+   * Methode qui est responsable de zoom et dezoom une perspective
+   * @param e, comment l'utilisateur roule sa roulette
+   * @throws NoninvertibleTransformException
+   */
 	public void zoom(MouseWheelEvent e) throws NoninvertibleTransformException {
 
 		int wheelRotation = e.getWheelRotation();
@@ -75,7 +88,10 @@ public class ModelePerspective implements Subject {
 		}
 		this.notifyObservers();
 	}
-
+  /**
+   * Sert a affecter un zoom a une perspective
+   * @throws NoninvertibleTransformException
+   */
 	public void setZoom() throws NoninvertibleTransformException {
 		int zoomAncien = sauvegardeNiveauxZoom.pop();
 		int zoomDif = zoomAncien - niveauZoom;
@@ -94,6 +110,11 @@ public class ModelePerspective implements Subject {
 		niveauZoom = zoomAncien;
 	}
 
+  /**
+   * Methode qui sert a zoomer
+   * @param pointZoom, le point ou l'on veut zoom
+   * @throws NoninvertibleTransformException
+   */
 	private void zoomIn(Point pointZoom) throws NoninvertibleTransformException {
 		Point2D pointAvant = transformPoint(pointZoom);
 		transformationCoordonnees.scale(PUISSANCE_ZOOM, PUISSANCE_ZOOM);
@@ -101,6 +122,11 @@ public class ModelePerspective implements Subject {
 		transformationCoordonnees.translate(pointApres.getX() - pointAvant.getX(), pointApres.getY() - pointAvant.getY());
 	}
 
+  /**
+   * Methode qui sert a dézoomer
+   * @param pointZoom, le point ou on veut dézoomer
+   * @throws NoninvertibleTransformException
+   */
 	private void zoomOut(Point pointZoom) throws NoninvertibleTransformException {
 		Point2D pointAvant = transformPoint(pointZoom);
 		transformationCoordonnees.scale(1 / PUISSANCE_ZOOM, 1 / PUISSANCE_ZOOM);
@@ -108,6 +134,9 @@ public class ModelePerspective implements Subject {
 		transformationCoordonnees.translate(pointApres.getX() - pointAvant.getX(), pointApres.getY() - pointAvant.getY());
 	}
 
+  /**
+   * Affecte le zoom
+   */
 	public void setZoomNoTranslate() {
 		int zoomAncien = sauvegardeNiveauxZoom.pop();
 		int zoomDif = niveauZoom - zoomAncien;
@@ -125,7 +154,10 @@ public class ModelePerspective implements Subject {
 		sauvegardeNiveauxZoom.add(niveauZoom);
 		this.notifyObservers();
 	}
-
+  /**
+   * Methode qui est responsable de translate une perspective
+   * @param e
+   */
 	public void translate(MouseEvent e) {
 		try {
 			this.setEcranFinSouris(e.getPoint());
@@ -139,18 +171,32 @@ public class ModelePerspective implements Subject {
 		}
 	}
 
+  /**
+   * Methode responsable de transformer le point
+   * @param p1, le point
+   * @return, le point transformé
+   * @throws NoninvertibleTransformException
+   */
 	public Point2D.Float transformPoint(Point p1) throws NoninvertibleTransformException {
 		AffineTransform inverse = transformationCoordonnees.createInverse();
 		Point2D.Float p2 = new Point2D.Float();
 		inverse.transform(p1, p2);
 		return p2;
 	}
+  /**
+   * ajoute des observateurs
+   * @param observer
+   */
 
 	@Override
 	public void addObserver(Observateur observer) {
 		this.abonnes.add(observer);
 	}
 
+  /**
+   * Resposanseeble d'initialiser l'application
+   * @return, true ou false
+   */
 	public boolean isInitialisationApplication() {
 		return initialisationApplication;
 	}
@@ -158,11 +204,17 @@ public class ModelePerspective implements Subject {
 	public void setInitialisationApplication(boolean initialisationApplication) {
 		this.initialisationApplication = initialisationApplication;
 	}
-
+  /**
+   * Sert a récupérer les coordonée de la perspective
+   * @return
+   */
 	public AffineTransform getTransformationCoordonnees() {
 		return transformationCoordonnees;
 	}
-
+  /**
+   * Sert a affecter des coordonée a une perspecyive
+   * @return
+   */
 	public void setTransformationCoordonnees(AffineTransform transformationCoordonnees) {
 		this.transformationCoordonnees = transformationCoordonnees;
 	}

@@ -9,6 +9,9 @@ import modeles.ModelePerspective;
 import vues.Vignette;
 import vues.Vue;
 
+/**
+ * Classe qui sert a instancier la fenetre principale
+ */
 public class FenetrePrincipale extends JFrame {
 
 	private static final String TITRE_FENETRE = "Laboratoire 3";
@@ -20,6 +23,7 @@ public class FenetrePrincipale extends JFrame {
 		ModelePerspective perspective1 = new ModelePerspective();
 		ModelePerspective perspective2 = new ModelePerspective();
 
+		//Les perspective et la vignette
 		Vue vue1 = new Vue(image, perspective1);
 		Vue vue2 = new Vue(image, perspective2);
 		Vignette vignette = new Vignette(image);
@@ -50,7 +54,7 @@ public class FenetrePrincipale extends JFrame {
 		this.setResizable(false);
 
 	}
-
+	//Main
 	public static void main(String[] args) throws Exception {
 		FenetrePrincipale f = new FenetrePrincipale();
 

@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.Stack;
 import modeles.ModelePerspective;
 
+/**
+ * Classe responsable des commandes
+ */
 public class GestionnaireCommandes {
 
 	private static GestionnaireCommandes gc;
@@ -22,10 +25,20 @@ public class GestionnaireCommandes {
 		return GestionnaireCommandes.gc;
 	}
 
+	/**
+	 * Classe responsable d'effectuer une commande sur un perspective
+	 * @param c, la commande
+	 * @param m, la perspective
+	 * @param e, l'action de la souris
+	 */
 	public void executerCommande(Commande c, ModelePerspective m, MouseEvent e) {
 		c.execute(m, e);
 	}
 
+	/**
+	 * Commande responsable d'annuler une commande
+	 * @param m, la perspective
+	 */
 	public void undoCommande(ModelePerspective m) {
 		if (!commandes.isEmpty()) {
 			Stack<Commande> commande = commandes.get(m);
@@ -35,6 +48,11 @@ public class GestionnaireCommandes {
 		}
 	}
 
+	/**
+	 * Methode responsabke d'ajouter une commande
+	 * @param c, la commande
+	 * @param m, la perspective
+	 */
 	public void ajouterCommande(Commande c, ModelePerspective m) {
 		if (!commandes.containsKey(m)) {
 			commandes.put(m, new Stack<>());

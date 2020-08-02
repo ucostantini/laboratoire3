@@ -31,6 +31,9 @@ import modeles.ModeleImage;
 import modeles.ModelePerspective;
 import vues.Vue;
 
+/**
+ * Classe qui est responsable de toutes les manipulations sur les perspectives
+ */
 public class Controleur extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener {
 
 	private final ModeleImage image;
@@ -45,6 +48,15 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 
 	boolean isZoom = false;
 
+	/**
+	 * Constructeur du controleur
+	 * @param vue1
+	 * @param vue2
+	 * @param image
+	 * @param perspective1
+	 * @param perspective2
+	 * @throws Exception
+	 */
 	public Controleur(Vue vue1, Vue vue2, ModeleImage image, ModelePerspective perspective1,
 			ModelePerspective perspective2) throws Exception {
 		this.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -104,12 +116,19 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 
 	}
 
+	/**
+	 * Methode responsable de faire le undo sur la perspective
+	 * @param mp, la perspective
+	 */
 	private void retablir(ModelePerspective mp) {
 		GestionnaireCommandes gc = GestionnaireCommandes.getInstance();
 		gc.undoCommande(mp);
 
 	}
 
+	/**
+	 * Methode responsable d'enregistrer les perspectives dans un fichier avec les changements effectuer
+	 */
 	private void enregistrer() {
 		// enregisrter les perspectives + image
 		JFileChooser dossier = new JFileChooser();
@@ -138,6 +157,9 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 		}
 	}
 
+	/**
+	 * Methode responsable d'ouvrir un fichier enregister, contenant les perspectives
+	 */
 	private void ouvrirFichier() {
 		// ouvrir le fichier sauvegarde
 		JFileChooser fichier = new JFileChooser();
@@ -171,6 +193,10 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 		}
 	}
 
+	/**
+	 * Methode qui detecte quand on clique avec la souris
+	 * @param mouseEvent
+	 */
 	@Override
 	public void mouseClicked(MouseEvent mouseEvent) {
 
@@ -182,6 +208,10 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 		isZoom = true;
 	}
 
+	/**
+	 * Methode qui detecte quand on aopuye su run composant avec la souris
+	 * @param mouseEvent
+	 */
 	@Override
 	public void mousePressed(MouseEvent mouseEvent) {
 		this.debut = mouseEvent.getPoint();
@@ -190,6 +220,10 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 		mp.setEcranFinSouris(null);
 	}
 
+	/**
+	 * Methode qui detecte quand la souris est relacher
+	 * @param mouseEvent
+	 */
 	@Override
 	public void mouseReleased(MouseEvent mouseEvent) {
 		if (!isZoom) {
@@ -202,12 +236,24 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 		isZoom = false;
 	}
 
+	/**
+	 * Methode qui detecte la presence de la souris sur un composant
+	 * @param mouseEvent
+	 */
 	@Override
 	public void mouseEntered(MouseEvent mouseEvent) {}
 
+	/**
+	 * Methode qui detecte la souris quite un composant
+	 * @param mouseEvent
+	 */
 	@Override
 	public void mouseExited(MouseEvent mouseEvent) {}
 
+	/**
+	 * Methode qui detecte quand la souris traine un composant
+	 * @param mouseEvent
+	 */
 	@Override
 	public void mouseDragged(MouseEvent mouseEvent) {
 		Vue source = (Vue) mouseEvent.getSource();
@@ -216,9 +262,17 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 		gc.executerCommande(new TranslateCommande(), mp, mouseEvent);
 	}
 
+	/**
+	 * Methode qui detecte quand la souris bouge
+	 * @param mouseEvent
+	 */
 	@Override
 	public void mouseMoved(MouseEvent mouseEvent) {}
 
+	/**
+	 * Methode qui detecte quand la roulette de la souris roule
+	 * @param mouseWheelEvent
+	 */
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent mouseWheelEvent) {
 		Vue source = (Vue) mouseWheelEvent.getSource();
