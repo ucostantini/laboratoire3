@@ -8,6 +8,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.NoninvertibleTransformException;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -88,7 +89,8 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			// Cet methode appelle notifyObservers
-			this.image.setImage(ImageIO.read(fileChooser.getSelectedFile()));
+			this.image.setImagePath(fileChooser.getSelectedFile().getAbsolutePath());
+			this.image.setImage(ImageIO.read(new File(this.image.getImagePath())));
 		}
 
 		// Chargement de la barre de menu
@@ -138,7 +140,7 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 			dest += dossier.getSelectedFile().getAbsolutePath();
 			System.out.println(dest);
 
-			ImageSauvegarde imgSave = new ImageSauvegarde(perspective1.getNiveauZoom(), perspective1.getTransformationCoordonnees(),
+			ImageSauvegarde imgSave = new ImageSauvegarde(this.image.getImagePath(), perspective1.getNiveauZoom(), perspective1.getTransformationCoordonnees(),
 					perspective2.getNiveauZoom(), perspective2.getTransformationCoordonnees());
 			try {
 				FileOutputStream fileOutImage = new FileOutputStream(dest + ".ser");
@@ -176,7 +178,8 @@ public class Controleur extends JPanel implements MouseListener, MouseMotionList
 				imgSave = (ImageSauvegarde) in.readObject();
 				in.close();
 				fileIn.close();
-
+				this.image.setImagePath(imgSave.getImagePath());
+				this.image.setImage(ImageIO.read(new File(this.image.getImagePath())));
 				this.perspective1.setNiveauZoom(imgSave.getZoom1());
 				this.perspective1.setZoomNoTranslate();
 				this.perspective1.setTransformationCoordonnees(imgSave.getTranslation1());

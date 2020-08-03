@@ -6,7 +6,7 @@ import modeles.ModeleImage;
 /**
  * Classe qui sert a afficher la vignette
  */
-public class Vignette extends JPanel {
+public class Vignette extends JPanel implements Observateur{
 
   private final ModeleImage modeleImage;
 /**
@@ -17,6 +17,14 @@ public class Vignette extends JPanel {
     this.modeleImage = image;
 
   }
+  
+  /**
+	 * Cette methode s'occupe de mettre à jour l'affichage
+	 */
+	@Override
+	public void update() {
+		repaint();
+	}
 
 	/**
 	 * Cette methode qui s'occupe de l'affichage

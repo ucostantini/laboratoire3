@@ -30,6 +30,7 @@ public class FenetrePrincipale extends JFrame {
 
 		image.addObserver(vue1);
 		image.addObserver(vue2);
+		image.addObserver(vignette);
 
 		perspective1.addObserver(vue1);
 		perspective2.addObserver(vue2);
