@@ -12,28 +12,40 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import modeles.ModeleImage;
 import modeles.ModelePerspective;
-
+/**
+ * Classe qui sert a afficher les vues
+ */
 public class Vue extends JPanel implements Observateur {
 
 	private final ModeleImage image;
 	private final ModelePerspective perspective;
-
+/**
+	 * Contructeur des vues à afficher
+	 * @param image, image a afficher
+	 * @param perspective, les perspective
+	 */
 	public Vue(ModeleImage image, ModelePerspective perspective) {
 		this.image = image;
 		this.perspective = perspective;
 		this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 	}
-
+/**
+	 * Cette methode s'occupe de mettre à jour l'affichage
+	 */
 	@Override
 	public void update() {
 		repaint();
 	}
-
+	/**
+	 * Cette methode s'occupe d'ajuster les dimensions
+	 */
 	public Dimension getPreferredSize() {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		return new Dimension(screenSize.width, screenSize.height);
 	}
-
+	/**
+	 * Cette methode s'occupe d'afficher les deux perspective
+	 */
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
